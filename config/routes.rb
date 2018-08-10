@@ -1,103 +1,62 @@
 Rails.application.routes.draw do
   
+  resources :events
+  
+  'home/index'
+
+  get 'home/index2'
+
+  #devise 페이지
   devise_for :users, :controllers => { registrations: 'registrations' }
   
+  #루트 페이지
   root 'home#index'
-  
   get 'home/index'
   
   #회원 페이지
   get 'private/index'
+  get 'private/my_page'
+  
+
+
   
   #qnas 페이지
   resources :qnas do
     resources :qnacomments, only: [:create, :destroy]
-    resources :qnareplies, only: [:new, :create, :destroy]
+    resources :qnareplies, only: [:create, :destroy]
   end
   
-  # 팁
-
-  get 'tips/index'
-
-  get 'tips/new'
-
-  get 'tips/create'
-
-  get 'tips/edit'
-
-  get 'tips/update'
-
-  get 'tips/destroy'
-
+  #quizzes 페이지
+  resources :quizzes do
+    resources :quizcomments, only: [:create, :destroy]
+  end
   
-  
-  #수업 시간 자료 게시판 라우팅
-  get 'session/index'
-
-  get 'session/new'
-
-  post 'session/create' => 'session#create'
-  
-  get 'session/show/:id' => 'session#show'
-  
-  get 'session/edit/:id' => 'session#edit'
-
-  post 'session/update/:id' => 'session#update'
-
-  get 'session/destroy/:id' => 'session#destroy'
-  
-  post 'session/writecomment' => 'session#writecomment'
-  
-  get 'session/destroycomment/:sessioncomment_id' => 'session#destroycomment'
-  
-  
-  #꿀팁 계시판 라우팅
-  
+  #tips 페이지
   resources :tips do
     resources :tipcomments, only: [:create, :destroy]
   end
-  # get 'tip/index'
-
-  # get 'tip/new'
-
-  # post 'tip/create' => 'tip#create'
   
-  # get 'tip/show/:id' => 'tip#show'
+  #수업 시간 자료 게시판 라우팅
   
-  # get 'tip/edit/:id' => 'tip#edit'
+  resources :lsessions do
+  resources :lsessioncomments, only: [:create, :destroy]
+  end
 
-  # post 'tip/update/:id' => 'tip#update'
-
-  # get 'tip/destroy/:id' => 'tip#destroy'
-  
-  # post 'tip/writecomment' => 'tip#writecomment'
-  
-  # get 'tip/destroycomment/:tipcomment_id' => 'tip#destroycomment'
-
-
-  #퀴즈 게시판 라우팅
-  get 'quiz/index'
-
-  get 'quiz/new'
-
-  post 'quiz/create' => 'quiz#create'
-  
-  get 'quiz/show/:id' => 'quiz#show'
-  
-  get 'quiz/edit/:id' => 'quiz#edit'
-
-  post 'quiz/update/:id' => 'quiz#update'
-
-  get 'quiz/destroy/:id' => 'quiz#destroy'
-  
-  post 'quiz/writecomment' => 'quiz#writecomment'
-  
-  get 'quiz/destroycomment/:quizcomment_id' => 'quiz#destroycomment'
   
   #슬랙 알림장 라우팅
   post 'private/slack_create' => 'private#slack_create'
   
+  post '/tinymce_assets' => 'tinymce_assets#create'
   
+  
+  #좋아요 라우팅
+  
+  post '/qna/:id/like', to: 'qnalikes#like_toggle', as: 'like_qna'
+  post '/quiz/:id/like', to: 'quizlikes#like_toggle', as: 'like_quiz'
+  post '/session/:id/like', to: 'sessionlikes#like_toggle', as: 'like_session'
+  post '/tip/:id/like', to: 'tiplikes#like_toggle', as: 'like_tip'
 
-  
+  #퀴즈 라우팅
+  get '/quizzes/:id/answer' => 'quizzes#answer'
+
 end

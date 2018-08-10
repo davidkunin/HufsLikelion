@@ -1,6 +1,6 @@
 class TipsController < ApplicationController
-    before_action :authenticate_user!, except: [:index, :show]
     before_action :set_tip, only: [:show, :edit, :update, :destroy]
+    load_and_authorize_resource
 
   def index
     if params[:search]
@@ -13,16 +13,14 @@ class TipsController < ApplicationController
 
   def new
     @tip=Tip.new
+    
   end
 
-  def create
-    @tip = Tip.new
+  def create    
+    @tip = Tip.new(tips_params)
     @tip.save
-    if @tip.save
-      redirect_to @tip
-    else
-      render :new
-    end
+    redirect_to tips_path
+
   end
 
   def show
@@ -37,8 +35,8 @@ class TipsController < ApplicationController
   
   
   def update
-    @tip.update(tip_params)
-    redirect_to @tip
+    @tip.update(tips_params)
+    redirect_to tips_path
   end
 
   def destroy
@@ -51,5 +49,8 @@ class TipsController < ApplicationController
     @tip = Tip.find(params[:id])
    end
 
+   def tips_params
+    params.require(:tip).permit(:user_email, :user_name, :title, :content)
+   end
 
 end

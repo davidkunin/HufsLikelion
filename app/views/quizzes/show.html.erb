@@ -1,0 +1,61 @@
+<div class="container">
+    <h1><%= @quiz. title %></h1>
+    
+    <div>
+        <div style="text-align:left">
+            <%if user_signed_in? && @quiz.user_email == current_user.email%>
+                <%=link_to '수정', edit_quiz_path%>
+                <%=link_to '삭제', quiz_path, method: :delete, data: {confirm: 'are you sure?' }%>
+            <%else%>
+            <%end%>
+        </div>
+    
+        <div style="text-align:right">
+            <%="조회수: #{@quiz.view_count}" %> / 작성 일자 : <%=@quiz.created_at.strftime("%Y.%m.%d %H:%M") %> / 작성자 : <%=@quiz.user_name%>(<%=@quiz.user_email%>)<br><br>
+        </div>
+    </div>
+
+    <div class="well">
+        <form action="/quizzes/<%=@quiz.id%>/answer">
+            <input type="radio" name="answer" value="1"> <%=@quiz.answer_one%><br>
+            <input type="radio" name="answer" value="2"> <%=@quiz.answer_two%><br>
+            <input type="radio" name="answer" value="3"> <%=@quiz.answer_three%><br>
+            <input type="radio" name="answer" value="4"> <%=@quiz.answer_four%><br>
+            <input type="radio" name="answer" value="5"> <%=@quiz.answer_five%><br>
+            <input type="submit" value="정답 제출">
+        </form>
+    </div>
+    
+        <% if @quizcomments.empty? %>
+        <% else%>
+        <strong>댓글</strong><br><br>
+            <table class="table table-fit">
+            <% i = 1 %>
+                <%@quizcomments.each do |x| %>
+                    <tr>
+                        <td width = "5%"><%=i%></td>
+                        <td width = "70%"><%=x.content %></td>
+                        <td width = "20%"><center> by. <%=x.user_name%>(<%=x.user_email%>)</center></td>
+                        <%if user_signed_in? && current_user.email == x.user_email %>
+                            <td width = "5%"><%= link_to "삭제", quiz_quizcomment_path(@quiz, x), method: :delete, data: {confirm: 'are you sure?' }, remote: true %></td>
+                        <%else%>
+                            <td width = "5%"></td>
+                        <%end%>
+                    </tr>
+            <% i = i + 1 %>
+                <%end%>
+            </table>
+            <hr>
+        <%end%>
+        
+        <% if user_signed_in? %>
+            <%= bootstrap_form_for (@quizcomment), url: quiz_quizcomments_path(@quiz) do |f| %>
+              <%= f.hidden_field :user_email, value: current_user.email%>
+              <%= f.hidden_field :user_name, value: current_user.name%>
+              <%= f.hidden_field :quiz_id, value: @quiz.id %>
+              <%= f.text_field :content, label: "댓글 작성" %>
+              <%= f.submit "작성" %>
+          <%end%>
+          <%else%>
+      <%end%>
+</div>

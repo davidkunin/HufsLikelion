@@ -1,6 +1,8 @@
 class QnasController < ApplicationController
   
   before_action :set_qna, only: [:show, :edit, :update, :destroy]
+  before_action :log_impression, only: [:show]
+  load_and_authorize_resource
   
   def index
     if params[:search]
@@ -24,6 +26,7 @@ class QnasController < ApplicationController
 
   def new
     @qna = Qna.new
+    
   end
 
   def create
@@ -43,6 +46,11 @@ class QnasController < ApplicationController
   def destroy
     @qna.destroy
     redirect_to qnas_path
+  end
+  
+  def log_impression
+    @hit_post = Qna.find(params[:id])
+    @hit_post.impressions.create(ip_address: request.remote_ip, user_id:current_user.id)
   end
   
   private 

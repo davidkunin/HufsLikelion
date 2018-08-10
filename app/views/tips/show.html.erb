@@ -1,42 +1,58 @@
-<h1><%=@tip.title%></h1>
-<hr>
-<h2><%=@tip.user_email%></h2>
-
-
-
-<% if @tip.user_email == current_user.email %>
+<div class="container">
+    <h1><%= @tip. title %></h1>
     
-    <%= link_to '수정', edit_tip_path%>
-    <%= link_to '삭제', tip_path, method: :delete%>
-<% else%>
-<% end%>
-
-
-<hr>
-<div class="well">
-    댓글 작성 창
-    <%#TODO: 댓글 창 완성하기 %>
-    <form action='/tips/:tip_id/tipcomments' method ='post'>
-        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-        <textarea class="form-control" name="content"></textarea>
-        <input type="hidden" name="user_email" value="<%=current_user.email%>">
-        <input type="hidden" name="tip_id" value="<%=@tip.id%>">
-        <input type="submit" value="SUBMIT">
-    </form>
+    <div>
+        <div style="text-align:left">
+            <%if user_signed_in? && @tip.user_email == current_user.email%>
+                <%=link_to '수정', edit_tip_path%>
+                <%=link_to '삭제', tip_path, method: :delete, data: {confirm: 'are you sure?' }%>
+            <%else%>
+            <%end%>
+        </div>
     
+        <div style="text-align:right">
+            <%="조회수: #{@tip.view_count}" %> / 작성 일자 : <%=@tip.created_at.strftime("%Y.%m.%d %H:%M") %> / 작성자 : <%=@tip.user_email%>(<%=@tip.user_email%>)<br><br>
+        </div>
+    </div>
+
+    <div class="well">
+        <%= simple_format(@tip.content)%> <br>
+    </div>
+    <a href = '/tips/<%=@tip.id%>/qnareplies/new'>답글 작성</a>
+    <br>
+    
+
+    
+        <% if @tipcomments.empty? %>
+        <% else%>
+        <strong>댓글</strong><br><br>
+            <table class="table table-fit">
+            <% i = 1 %>
+                <%@tipcomments.each do |x| %>
+                    <tr>
+                        <td width = "5%"><%=i%></td>
+                        <td width = "70%"><%=x.content %></td> 
+                        <td width = "20%"><center> by. <%=x.user_name%>(<%=x.user_email%>)</center></td>
+                        <%if user_signed_in? && current_user.email == x.user_email %>
+                            <td width = "5%"><%= link_to "삭제", tip_tipcomment_path(@tip, x), method: :delete,data: {confirm: 'are you sure?' }, remote: true %></td>
+                        <%else%>
+                            <td width = "5%"></td>
+                        <%end%>
+                    </tr>
+            <% i = i + 1 %>
+                <%end%>
+            </table>
+            <hr>
+        <%end%>
+        
+        <% if user_signed_in? %>
+            <%= bootstrap_form_for (@tipcomment), url: tip_tipcomments_path(@tip) do |f| %>
+              <%= f.hidden_field :user_email, value: current_user.email%>
+              <%= f.hidden_field :user_name, value: current_user.name%>
+              <%= f.hidden_field :tip_id, value: @tip.id %>
+              <%= f.text_field :content, label: "댓글 작성" %>
+              <%= f.submit "작성" %>
+          <%end%>
+          <%else%>
+      <%end%>
 </div>
-<hr>
-<div>
-    댓글 보여주는 곳
-    <hr>
-    <%#TODO: 댓글 창 완성하기 %>
-    <%@tip.tipcomments.each do |comment| %>
-        <%= comment.user_email %>: <%=comment.content%>
-         <a href="/tips/:tip_id/tipcomments/:id" data-method ='delete'>delete</a><br>
-    <%end%>
-</div>
-
-
-
-
-
