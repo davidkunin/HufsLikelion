@@ -24,28 +24,18 @@ gem 'devise-bootstrap-views'
 gem 'cancancan'
 gem 'rolify'
 
+#텍스트 에디터
 gem 'tinymce-rails'
 
 #이미지 업로더
 gem 'tinymce-rails-imageupload', '~> 4.0.0.beta'
 gem 'carrierwave'
 gem 'figaro'
+gem 'fog-aws'
 
 
-#게시판 텍스트 에디터
-gem 'trix'
 gem 'jquery-rails'
 
-#파일 업로드 (인건) 테스트
-gem "shrine", "~> 2.0"
-gem "aws-sdk-s3", "~> 1.2" # for AWS S3 storage
-
-
-gem 'mini_magick'
-#이미지를 조종
-gem 'fog-aws'
-#aws s3조작할때 쓰는거
-gem 'carrierwave'
 
 gem 'rails_db'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
